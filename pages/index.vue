@@ -1,7 +1,7 @@
 <template>
   <client-only>
     <div class="page-container">
-      <h1>Nuxt Wagmi Example</h1>
+      <h1>ReOwn AppKit Nuxt Wagmi/Solana Example</h1>
       <button @click="connectWallet" class="connect-button">
         <span v-if="auth?.connected">
           Connected: {{ auth.address }}
@@ -16,9 +16,10 @@
 
 <script setup lang="ts">
 import { useSignMessage } from "@wagmi/vue";
-const { useAppKitAccount } = useAppKitClientOnly();
+const { useAppKitAccount, useAppKitProvider } = useAppKitClientOnly();
 const { connectWallet } = useConnectWallet();
-
+import { Base58 } from '@ethersproject/basex';
+const appKitProvider = computed(() => useAppKitProvider(namespace.value));
 const { signMessageAsync: signWagmiMessage } = useSignMessage()
 
 const accountInfo = useAppKitAccount();
@@ -80,10 +81,18 @@ const handleWalletConnection =async () => {
 };
 
 const signMessage = async (message: string, address: string) => {
-  
+  let { walletProvider } = appKitProvider?.value ?? {}; 
   try {
-    const signature = await signWagmiMessage({ message, account: address });
-    return signature;
+    if (namespace.value === "solana") {
+      const input = new TextEncoder().encode(message);
+      const signature = await walletProvider.signMessage(input);
+      return Base58.encode(signature);
+    } else if (namespace.value === "eip155") {
+      const signature = await signWagmiMessage({ message, account: address });
+      return signature;
+    } else {
+      throw new Error("Unsupported chain namespace: " + namespace.value);
+    }
   } catch (error) {
     console.error("Error signing message:", error);
     throw error;

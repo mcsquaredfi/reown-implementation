@@ -7,26 +7,27 @@ export default defineNuxtPlugin(async (nuxtApp) => {
     useAppKitNetwork,
     useAppKitProvider,
     useAppKitEvents,
-  } = await import('@reown/appkit/vue')
+  } = await import("@reown/appkit/vue");
 
-  const { WagmiPlugin } = await import('@wagmi/vue')
-  const { WagmiAdapter } = await import('@reown/appkit-adapter-wagmi')
-  const { mainnet, sepolia, bsc, polygon, arbitrum, base } = await import('@reown/appkit/networks')
-  const { QueryClient } = await import('@tanstack/vue-query')
+  const { WagmiPlugin } = await import("@wagmi/vue");
+  const { WagmiAdapter } = await import("@reown/appkit-adapter-wagmi");
+  const { SolanaAdapter } = await import("@reown/appkit-adapter-solana");
+  const { mainnet, sepolia, bsc, polygon, arbitrum, base, solana } =
+    await import("@reown/appkit/networks");
+  const { QueryClient } = await import("@tanstack/vue-query");
 
-  const projectId = useRuntimeConfig().public.projectId
+  const projectId = useRuntimeConfig().public.projectId;
 
-  const networks = [mainnet, sepolia, bsc, polygon, arbitrum, base]
+  const networks = [mainnet, sepolia, bsc, polygon, arbitrum, base, solana];
 
   const wagmiAdapter = new WagmiAdapter({
     networks,
-    projectId
-  })
+    projectId,
+  });
 
+  const queryClient = new QueryClient();
 
-  const queryClient = new QueryClient()
-
-  nuxtApp.provide('appKit', {
+  nuxtApp.provide("appKit", {
     createAppKit,
     useAppKit,
     useAppKitAccount,
@@ -34,10 +35,14 @@ export default defineNuxtPlugin(async (nuxtApp) => {
     useAppKitNetwork,
     useAppKitProvider,
     useAppKitEvents,
+    solanaAdapter: new SolanaAdapter(),
     wagmiAdapter,
     networks,
     projectId,
-  })
+  });
 
-  nuxtApp.vueApp.use(WagmiPlugin, { config: wagmiAdapter.wagmiConfig, queryClient })
-})
+  nuxtApp.vueApp.use(WagmiPlugin, {
+    config: wagmiAdapter.wagmiConfig,
+    queryClient,
+  });
+});

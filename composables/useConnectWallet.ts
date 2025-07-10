@@ -10,6 +10,7 @@ export const useConnectWallet = () => {
     createAppKit,
     useDisconnect,
     wagmiAdapter,
+    solanaAdapter,
     networks,
     projectId,
   } = appKit;
@@ -18,17 +19,14 @@ export const useConnectWallet = () => {
     if (isInitialized) return;
 
     createAppKit({
-      adapters: [wagmiAdapter],
+      adapters: [wagmiAdapter, solanaAdapter],
       networks: networks,
       projectId: projectId,
       allWallets: "SHOW",
       features: {
         email: false,
         analytics: true,
-        socials: [
-          "google",
-          'x'
-        ],
+        socials: ["google", "x"],
         emailShowWallets: true,
       },
     });
