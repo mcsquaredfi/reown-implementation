@@ -2,14 +2,14 @@
   <client-only>
     <div class="page-container">
       <h1>ReOwn AppKit Nuxt Wagmi/Solana Example</h1>
-      <button @click="connectWallet" class="connect-button">
-        <span v-if="auth?.connected">
-          Connected: {{ auth.address }}
-        </span>
-        <span v-else>
-          Connect Wallet
-        </span>
+      <button v-if="!auth?.connected" @click="connectWallet" class="connect-button">
+        Connect Wallet
       </button>
+      <div v-else class="account-info">
+        <p>Connected Address: {{ accountInfo?.address }}</p>
+        <p>Namespace: {{ namespace }}</p>
+        <button @click="logout" class="logout-button">Logout</button>
+      </div>
     </div>
   </client-only>
 </template>
@@ -36,7 +36,7 @@ const ACCOUNT_STATUS = {
 };
 
 const logout = () => {
-  console.info('Logging out user');
+  auth.value = { connected: false };
 };
 
 const auth = ref({connected:false})
