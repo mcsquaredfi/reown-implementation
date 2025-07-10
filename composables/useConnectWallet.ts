@@ -29,6 +29,7 @@ export const useConnectWallet = () => {
         socials: ["google", "x"],
         emailShowWallets: true,
       },
+      connectMethodsOrder: ["social", "wallet"],
     });
 
     isInitialized = true;
